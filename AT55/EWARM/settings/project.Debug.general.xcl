@@ -1,0 +1,15 @@
+"F:\iarr\arm\bin\armproc.dll" 
+
+"F:\iarr\arm\bin\armjlink2.dll" 
+
+"C:\Users\Administrator\Documents\WeChat Files\wxid_u0f8l2l7pq6p22\FileStorage\File\2022-06\AT55\EWARM\Debug\Exe\Template.out" 
+
+--plugin "F:\iarr\arm\bin\armbat.dll" 
+
+--device_macro "F:\iarr\arm\config\debugger\ArteryTek\AT32F4xx_XL.dmac" 
+
+--flash_loader "F:\iarr\arm\config\flashloader\ArteryTek\AT32F421\AT32F421C8T7\FlashAT32F421C8T7.board" 
+
+
+
+

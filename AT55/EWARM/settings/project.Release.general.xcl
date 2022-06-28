@@ -1,0 +1,13 @@
+"F:\iarr\arm\bin\armproc.dll" 
+
+"F:\iarr\arm\bin\armsim2.dll" 
+
+"C:\Users\Administrator\Documents\WeChat Files\wxid_u0f8l2l7pq6p22\FileStorage\File\2022-06\AT55\EWARM\Release\Exe\project.out" 
+
+--plugin "F:\iarr\arm\bin\armbat.dll" 
+
+--device_macro "F:\iarr\arm\config\debugger\ArteryTek\AT32F421xx.dmac" 
+
+
+
+
