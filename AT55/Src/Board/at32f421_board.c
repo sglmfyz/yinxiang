@@ -66,7 +66,7 @@ static void uart_init()
     usart_receiver_enable(USART1, TRUE);
     usart_enable(USART1, TRUE);
     nvic_irq_enable(USART1_IRQn, 3, 0);
-
+#if 1
     /* uart2 */
     gpio_pin_mux_config(GPIOA, GPIO_PINS_SOURCE2, GPIO_MUX_1);
     gpio_pin_mux_config(GPIOA, GPIO_PINS_SOURCE3, GPIO_MUX_1);
@@ -78,6 +78,7 @@ static void uart_init()
     usart_receiver_enable(USART2, TRUE);
     usart_enable(USART2, TRUE);
     nvic_irq_enable(USART2_IRQn, 3, 0);
+#endif    
 }
 
   static void ADC1_CH_DMA_Config(void)
@@ -96,7 +97,7 @@ static void uart_init()
  
 
 
-    ADC_Buffer_Init(adc, 20, 4);//avg和channel是用来调什么的？除了一以外每个减一
+    ADC_Buffer_Init(adc, 50, 5);//avg和channel是用来调什么的？除了一以外每个减一
  
     GPIO_InitStructure.gpio_pins =  GPIO_PINS_1|GPIO_PINS_4|GPIO_PINS_5|GPIO_PINS_6|GPIO_PINS_7 ;  //5个voc；
     GPIO_InitStructure.gpio_mode = GPIO_MODE_INPUT;
@@ -108,7 +109,7 @@ static void uart_init()
     DMA_InitStructure.peripheral_base_addr=(uint32_t)&adc->odt;
     DMA_InitStructure.memory_base_addr=(uint32_t)ADC_Get_Buffer(adc);
     DMA_InitStructure.direction=DMA_DIR_PERIPHERAL_TO_MEMORY;
-	DMA_InitStructure.buffer_size=sizeof(uint16_t)*5;
+	DMA_InitStructure.buffer_size=50*5;
     DMA_InitStructure.memory_inc_enable=DMA_MEMORY_INC_ENABLE;
 	DMA_InitStructure.peripheral_inc_enable=DMA_PERIPHERAL_INC_DISABLE;
     DMA_InitStructure.peripheral_data_width=DMA_PERIPHERAL_DATA_WIDTH_HALFWORD;
@@ -239,6 +240,7 @@ void Board_Init()
     uart_init();
     ADC1_CH_DMA_Config();
     sw_uart_init(TMR16, CRM_TMR16_PERIPH_CLOCK);
+    
 }
 
 

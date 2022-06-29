@@ -1010,20 +1010,20 @@
         <option>
           <name>Input variant</name>
           <version>3</version>
-          <state>0</state>
+          <state>7</state>
         </option>
         <option>
           <name>Input description</name>
-          <state>Automatic choice of formatter.</state>
+          <state>No specifier n, no float nor long long, no scan set, no assignment suppressing, without multibyte support.</state>
         </option>
         <option>
           <name>Output variant</name>
           <version>2</version>
-          <state>0</state>
+          <state>6</state>
         </option>
         <option>
           <name>Output description</name>
-          <state>Automatic choice of formatter.</state>
+          <state>No specifier a, A, no specifier n, no float nor long long, without multibyte support.</state>
         </option>
         <option>
           <name>GOutputBinary</name>
@@ -1069,7 +1069,7 @@
         </option>
         <option>
           <name>GenLowLevelInterface</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>GEndianModeBE</name>
@@ -1587,15 +1587,15 @@
         <option>
           <name>OOCOutputFormat</name>
           <version>3</version>
-          <state>0</state>
+          <state>3</state>
         </option>
         <option>
           <name>OCOutputOverride</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state></state>
+          <state>sc55.bin</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>
@@ -1603,7 +1603,7 @@
         </option>
         <option>
           <name>OOCObjCopyEnable</name>
-          <state>0</state>
+          <state>1</state>
         </option>
       </data>
     </settings>
@@ -1714,7 +1714,7 @@
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>lnk0t.icf</state>
+          <state>$TOOLKIT_DIR$\config\linker\ArteryTek\AT32F421x8.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -1774,7 +1774,7 @@
         </option>
         <option>
           <name>IlinkProgramEntryLabel</name>
-          <state></state>
+          <state>__iar_program_start</state>
         </option>
         <option>
           <name>DoFill</name>
@@ -1865,7 +1865,7 @@
         </option>
         <option>
           <name>IlinkOptInline</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IlinkOptExceptionsAllow</name>
@@ -1987,10 +1987,10 @@
   <group>
     <name>driver</name>
     <file>
-      <name>$PROJ_DIR$\..\Src\Driver\eeprom.c</name>
+      <name>$PROJ_DIR$\..\Src\Driver\at24c256.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\Src\Driver\misc_485.c</name>
+      <name>$PROJ_DIR$\..\Src\Driver\eeprom.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Src\Driver\sht3x.c</name>

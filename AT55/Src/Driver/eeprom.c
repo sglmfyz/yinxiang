@@ -11,6 +11,7 @@
 AT24c256_T *AT24;
 
 
+
 int EE_Init(void)
 {    
     AT24 = Create_AT24C256();

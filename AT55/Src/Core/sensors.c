@@ -168,7 +168,7 @@ static int _sht3x_get(void *this, I2C_T *i2c, int probe, float *temper, float *h
     return status;
 }
 
-#if 1
+#if 0
 PROCESS(_sensors, "sensor");
 
 PROCESS_THREAD(_sensors, ev, data)
@@ -285,30 +285,11 @@ PROCESS_THREAD(_sensors, ev, data)
     PROCESS_END();
 }
 
-int Sensors_Init()
-{
 
-    zmalloc(sensor_info, sizeof(*sensor_info));
-    
-    sensor_info->sensor[TYPE_SHT3X] = Create_SHT3X(NULL);
-    sensor_info->get[TYPE_SHT3X] = _sht3x_get;
-    sensor_info->temp_last = 200;
-
-    return 0;
-}
-
-int Sensors_Add_Temp(int channel, I2C_T *i2c1)
-{
-    i_assert(channel < I2C_NUM && sensor_info->i2c[channel] == NULL);
-    
-    sensor_info->i2c[channel] = i2c1;
-
-    return 0;
-}
 #endif
 
-#if 0
-#error 1
+#if 1
+
 PROCESS(_sensors, "sensor");
 
 PROCESS_THREAD(_sensors, ev, data)
@@ -332,30 +313,50 @@ PROCESS_THREAD(_sensors, ev, data)
         etimer_set(&etimer, SENSOR_UPDATE_TIMEOUT);        
  
         PROCESS_WAIT_UNTIL(etimer_expired(&etimer));
-        printf("value=%d    \n");
+        
         reg1 = ADC_Get(ADC1, 0);
         v = _reg2VOC(reg1, ad0);
-        update_input_reg(UREG3X_ADC0_VALUE, v);
-       
+        printf("param v value=%d    \n",v);
+        update_input_reg(UREG3X_ADC0_VALUE, reg1);
+     
         reg1 = ADC_Get(ADC1, 1);
         v = _reg2VOC(reg1, ad0);
-        update_input_reg(UREG3X_ADC1_VALUE, v);
+        update_input_reg(UREG3X_ADC1_VALUE, reg1);
 
         reg1 = ADC_Get(ADC1, 2);
         v = _reg2VOC(reg1, ad0);
-        update_input_reg(UREG3X_ADC2_VALUE, v);
+        update_input_reg(UREG3X_ADC2_VALUE, reg1);
         reg1 = ADC_Get(ADC1, 3);
         v = _reg2VOC(reg1, ad0);
-        update_input_reg(UREG3X_ADC3_VALUE, v);
+        update_input_reg(UREG3X_ADC3_VALUE, reg1);
         reg1 = ADC_Get(ADC1, 4);
         v = _reg2VOC(reg1, ad0);
-        update_input_reg(UREG3X_ADC4_VALUE, v);   //??
+        update_input_reg(UREG3X_ADC4_VALUE, reg1);   //??
         
         }
     PROCESS_END();
 }
 #endif
+int Sensors_Init()
+{
 
+    zmalloc(sensor_info, sizeof(*sensor_info));
+    
+    sensor_info->sensor[TYPE_SHT3X] = Create_SHT3X(NULL);
+    sensor_info->get[TYPE_SHT3X] = _sht3x_get;
+    sensor_info->temp_last = 200;
+
+    return 0;
+}
+
+int Sensors_Add_Temp(int channel, I2C_T *i2c1)
+{
+    i_assert(channel < I2C_NUM && sensor_info->i2c[channel] == NULL);
+    
+    sensor_info->i2c[channel] = i2c1;
+
+    return 0;
+}
 
 int Sensor_Start()
 {

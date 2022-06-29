@@ -2347,10 +2347,10 @@
   <group>
     <name>driver</name>
     <file>
-      <name>$PROJ_DIR$\..\Src\Driver\eeprom.c</name>
+      <name>$PROJ_DIR$\..\Src\Driver\at24c256.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\Src\Driver\misc_485.c</name>
+      <name>$PROJ_DIR$\..\Src\Driver\eeprom.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\Src\Driver\sht3x.c</name>

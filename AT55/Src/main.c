@@ -52,7 +52,7 @@
 
     status = Worker_Init();
     i_assert(status == 0);
-  
+    
     while(1) {
         process_run();
         etimer_request_poll();

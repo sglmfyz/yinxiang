@@ -11,8 +11,8 @@ int EE_Init(void)
 {
     at24 = Create_AT24C256();
     i_assert(at24);
-    
-    at24->Set_I2C_Addr(at24, sw_i2c1, AT24_I2C_ADDR);
+    at24->Set_I2C_Addr(at24, i2c1, AT24_I2C_ADDR);//之前的也没有为什么能跑？
+   // at24->Set_I2C_Addr(at24, sw_i2c1, AT24_I2C_ADDR);
     return 0;    
 }
 

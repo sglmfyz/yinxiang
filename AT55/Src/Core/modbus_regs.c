@@ -26,7 +26,7 @@ static struct {
     uint16_t input_reg[INPUT_REG_NUM];
     uint16_t hold_reg[HOLD_REG_NUM];
 } *modbus_info;
-static uint16_t *input, *hold;
+static uint16_t *input, *hold;//选一个就够了
 
 
 
@@ -42,9 +42,11 @@ int update_input_reg(uint16_t reg, uint16_t value)
 {
     if (reg < INPUT_REG_NUM) {
         modbus_info->input_reg[reg] = value;
+        
     } else {
         return -PARAM_ERR;
     }
+    printf("input reg[%d] value= %d     \n",reg, modbus_info->input_reg[reg]);
     return 0;
 }
 
@@ -208,9 +210,11 @@ static void get_hold_reg_by_flash(uint16_t *hold_reg)
         update_hold_reg(i / 2 + 1, temp >> 16);
     }
 }
-#if 0
+#if 1
 static void set_eeprom_init_flag(void)
 {
+  
+
     int status;
     uint8_t cmd = 0xfe;
 
@@ -236,6 +240,8 @@ void modbus_param_init(void)
     
     EE_ReadVariable(EE_MODBUS_4X_BASE, &is_ee_init);//判断是否第一次上电
     syslog_info("The board_info cmd value is 0x%x\n", board_info->cmd);
+    printf("base= %d,value =%d  \n",EE_MODBUS_4X_BASE,*(__IO uint32_t*)EE_MODBUS_4X_BASE);
+   // printf("%d",(__IO uint32_t*)FLASH_MODBUS_4X_BASE);
     if(bit_is_set(board_info->cmd, BOARD_CMD_EEPROM_BIT)){
         syslog_info("First start up after manufactured!\n");
         is_ee_init = 0;
@@ -244,7 +250,7 @@ void modbus_param_init(void)
 
 	if(is_ee_init != EEPROM_INIT_VAR){
         wdt_counter_reload();
-        get_hold_reg_by_flash(modbus_info->hold_reg);//首次上电从flash中读取hold_reg的值
+     //   get_hold_reg_by_flash(modbus_info->hold_reg);//首次上电从flash中读取hold_reg的值
         wdt_counter_reload();
         EE_WriteBytes(EE_MODBUS_4X_BASE + 2, (uint8_t *)(&modbus_info->hold_reg[1]), HOLD_REG_NUM - 2);
         wdt_counter_reload();
@@ -289,7 +295,7 @@ void modbus_init()
 
     modbus = Create_Modbus_Slave();
     //modbus->Add_Uart(modbus, uart2, MODBUS_RTU, 1);
-    modbus->Add_Uart(modbus, uart3, MODBUS_RTU, 1);
+    modbus->Add_Uart(modbus, uart1, MODBUS_RTU, 1);//?这样行不行换接口
     zmalloc(input, 128 * sizeof(uint16_t));
     zmalloc(hold, 128 * sizeof(uint16_t));
 
@@ -298,12 +304,14 @@ void modbus_init()
         hold[i] = i * 2 + 1;
     }
     
-    modbus->Set_Reg(modbus, MODBUS_INPUT_REG, input, 128);
-    modbus->Set_Reg(modbus, MODBUS_HOLDING_REG, hold, 128);
+   // modbus->Set_Reg(modbus, MODBUS_INPUT_REG, input, 128);
+   // modbus->Set_Reg(modbus, MODBUS_HOLDING_REG, hold, 128);
  
+    modbus->Set_Reg(modbus, MODBUS_INPUT_REG, modbus_info->input_reg, INPUT_REG_NUM);//每个寄存器名称仍需要看头文件
+    modbus->Set_Reg(modbus, MODBUS_HOLDING_REG, modbus_info->hold_reg, HOLD_REG_NUM);
     
 
-#ifdef sksks
+#if 0
 #error 1
     MBSlave_T *modbus;
     uint8_t uid = low_byte(board_info->dev_id);

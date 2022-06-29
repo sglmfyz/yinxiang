@@ -4,8 +4,8 @@
 #include "i2c.h"
 #include "heap.h"
 #include "log.h"
-#include "util.h"
 
+#include "util.h"
 #define MAX_WRITE_BYTES 64
 #define MAX_READ_BYTES 64
 #define WRITE_CYCLE 6
@@ -47,7 +47,7 @@ static int _write_bytes(AT24c256_T *this, uint16_t addr, uint8_t *data, uint16_t
 
         now = Micros();
         if (now - info->last_write <= WRITE_CYCLE) {
-            Delay_MS(WRITE_CYCLE - (now - info->last_write));
+            Delay_ms(WRITE_CYCLE - (now - info->last_write));
         }
         status = info->i2c->Mem_Write(info->i2c, info->addr, (uint8_t *)&addr, 2, data, l);
         if (status == 0) {
@@ -79,7 +79,7 @@ static int _read_bytes(AT24c256_T *this, uint16_t addr, uint8_t *data, uint16_t 
 
     now = Micros();
     if (now - info->last_write <= WRITE_CYCLE) {
-        Delay_MS(WRITE_CYCLE - (now - info->last_write));
+        Delay_ms(WRITE_CYCLE - (now - info->last_write));
     }
     
     while (left > 0) {
