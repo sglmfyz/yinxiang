@@ -17,7 +17,7 @@ MultiCoreRunAll=0
 [ArmDriver]
 EnableCache=1
 [DebugChecksum]
-Checksum=-1128741840
+Checksum=-1242087196
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -32,7 +32,7 @@ CStepIntDis=_ 0
 LeaveTargetRunning=_ 0
 TraceBufferSize=0x00010000
 TraceStallIfFIFOFull=0x00000000
-TracePortSize=0x00000000
+TracePortSize=0x00000004
 [SWOTraceHWSettings]
 OverrideDefaultClocks=0
 CpuClock=72000000
@@ -112,22 +112,13 @@ ShowTimeLog=1
 SumEnabled=0
 ShowTimeSum=1
 SumSortOrder=0
-[Disassemble mode]
-mode=0
-[Breakpoints2]
-Bp0=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Src\Core\modbus_regs.c}.296.14" 0 0 1 "" 0 "" 0
-Count=1
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
 Category=_ 0
-[Aliases]
-A0=_ "D:\code\AT32\AT55\Libraries\cmsis\cm4\device_support\startup\iar\startup_at32f421.s" ""
-A1=_ "D:\code\AT32\AT55\Libraries\drivers\src\at32f421_gpio.c" ""
-A2=_ "D:\code\Board\AT32\AT55\Src\at32f421_it.c" ""
-A3=_ "D:\code\Board\AT32\AT55\Src\main.c" ""
-Count=4
-SuppressDialog=1
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
 [DriverProfiling]
 Enabled=0
 Mode=1
@@ -142,6 +133,18 @@ ShowTiming=1
 Frequency=10000
 Probe0=I0
 ProbeSetup0=2 1 1 2 0 0
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
+[Disassemble mode]
+mode=0
+[Breakpoints2]
+Bp0=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Src\Core\modbus_regs.c}.228.5" 0 0 1 "" 0 "" 0
+Bp1=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Src\Driver\miscdrv.c}.114.5" 0 0 1 "" 0 "" 0
+Bp2=_ 0 "EMUL_CODE" "{$PROJ_DIR$\..\Src\Driver\miscdrv.c}.117.9" 0 0 1 "" 0 "" 0
+Bp3=_ 1 "EMUL_CODE" "{$PROJ_DIR$\..\Src\Core\modbus_regs.c}.206.8" 0 0 1 "" 0 "" 0
+Count=4
+[Aliases]
+A0=_ "D:\code\AT32\AT55\Libraries\cmsis\cm4\device_support\startup\iar\startup_at32f421.s" ""
+A1=_ "D:\code\AT32\AT55\Libraries\drivers\src\at32f421_gpio.c" ""
+A2=_ "D:\code\Board\AT32\AT55\Src\at32f421_it.c" ""
+A3=_ "D:\code\Board\AT32\AT55\Src\main.c" ""
+Count=4
+SuppressDialog=1

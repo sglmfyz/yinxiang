@@ -2353,6 +2353,9 @@
       <name>$PROJ_DIR$\..\Src\Driver\eeprom.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\Src\Driver\miscdrv.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\Src\Driver\sht3x.c</name>
     </file>
   </group>

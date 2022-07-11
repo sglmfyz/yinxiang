@@ -316,7 +316,7 @@ PROCESS_THREAD(_sensors, ev, data)
         
         reg1 = ADC_Get(ADC1, 0);
         v = _reg2VOC(reg1, ad0);
-        printf("param v value=%d    \n",v);
+        
         update_input_reg(UREG3X_ADC0_VALUE, reg1);
      
         reg1 = ADC_Get(ADC1, 1);

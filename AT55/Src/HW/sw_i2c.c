@@ -195,7 +195,8 @@ static int _set_delay(I2C_T *this, uint16_t us)
 
 
 static int _mem_write(I2C_T *this, uint8_t DevAddress, uint8_t *MemAddress, uint16_t AddrSize, uint8_t *pData, uint16_t Size)
-{
+{  
+    //devaddress=i2c地址。mem地址-->为&addr ff0? data为传入数据地址，地址发过去
     int i, status;
     uint8_t tmp[2];
 
@@ -210,8 +211,10 @@ static int _mem_write(I2C_T *this, uint8_t DevAddress, uint8_t *MemAddress, uint
     if (AddrSize == 2) {
         tmp[0] = MemAddress[1];
         tmp[1] = MemAddress[0];
+    printf("MemAddress1=%d  0=%d    \n",MemAddress[1],MemAddress[0]);
     } else {
         tmp[0] = MemAddress[0];
+     printf("MemAddress  0=%d    \n",MemAddress[0]);
     }
     
     for (i=0; i<AddrSize; i++) {

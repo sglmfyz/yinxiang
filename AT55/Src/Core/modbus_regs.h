@@ -64,13 +64,13 @@ enum {
     
     UREG3X_MONITOR,                 //监视寄存器，当4X寄存器发生改变时，通知读4X寄存器
 
-	UREG3X_ADC0_VALUE=50,
+	UREG3X_ADC0_VALUE=55,
     UREG3X_ADC1_VALUE,
     UREG3X_ADC2_VALUE,
     UREG3X_ADC3_VALUE,
     UREG3X_ADC4_VALUE,
     UREG3X_FIRMWARE_VER = 60,    
-    UREG3X_REG_END=64,
+    UREG3X_REG_END=128,
 };
 
 enum {
@@ -138,6 +138,9 @@ enum {
 #define MAX_MODBUS_UID 64
 #define MAX_FAN_SPEED 100
 #define MIN_FAN_SPEED 30
+#define FLASH_MODBUS_4X_BASE  (FLASH_BASE_ADDR + FLASH_SIZE - 1024 - 1024)//原来-16
+
+
 void modbus_param_init(void);
 uint16_t get_input_reg(uint16_t reg);
 int update_input_reg(uint16_t reg, uint16_t value);

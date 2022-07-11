@@ -66,7 +66,6 @@ static void uart_init()
     usart_receiver_enable(USART1, TRUE);
     usart_enable(USART1, TRUE);
     nvic_irq_enable(USART1_IRQn, 3, 0);
-#if 1
     /* uart2 */
     gpio_pin_mux_config(GPIOA, GPIO_PINS_SOURCE2, GPIO_MUX_1);
     gpio_pin_mux_config(GPIOA, GPIO_PINS_SOURCE3, GPIO_MUX_1);
@@ -78,7 +77,6 @@ static void uart_init()
     usart_receiver_enable(USART2, TRUE);
     usart_enable(USART2, TRUE);
     nvic_irq_enable(USART2_IRQn, 3, 0);
-#endif    
 }
 
   static void ADC1_CH_DMA_Config(void)
@@ -89,16 +87,9 @@ static void uart_init()
     adc_type *adc = ADC1;
 
     /* Enable ADC1, DMA2 and GPIO clocks ****************************************/
-
-	   
     crm_periph_clock_enable(CRM_ADC1_PERIPH_CLOCK,TRUE);   
     crm_periph_clock_enable(CRM_DMA1_PERIPH_CLOCK,TRUE);   //dma1线和uart1线都在apb2总线上，4分频过后波特率要2分频
-	
- 
-
-
     ADC_Buffer_Init(adc, 50, 5);//avg和channel是用来调什么的？除了一以外每个减一
- 
     GPIO_InitStructure.gpio_pins =  GPIO_PINS_1|GPIO_PINS_4|GPIO_PINS_5|GPIO_PINS_6|GPIO_PINS_7 ;  //5个voc；
     GPIO_InitStructure.gpio_mode = GPIO_MODE_INPUT;
 	GPIO_InitStructure.gpio_out_type=GPIO_OUTPUT_PUSH_PULL;
@@ -106,6 +97,7 @@ static void uart_init()
     gpio_init(GPIOA, &GPIO_InitStructure);
     dma_reset(DMA1_CHANNEL1);
     dma_default_para_init(&DMA_InitStructure);
+    
     DMA_InitStructure.peripheral_base_addr=(uint32_t)&adc->odt;
     DMA_InitStructure.memory_base_addr=(uint32_t)ADC_Get_Buffer(adc);
     DMA_InitStructure.direction=DMA_DIR_PERIPHERAL_TO_MEMORY;
@@ -117,7 +109,7 @@ static void uart_init()
     DMA_InitStructure.loop_mode_enable=TRUE;
     DMA_InitStructure.priority=DMA_PRIORITY_HIGH;
     dma_init(DMA1_CHANNEL1, &DMA_InitStructure);
-  
+
 
     /* Enable DMA1 channel1 */
     dma_channel_enable(DMA1_CHANNEL1, TRUE);
@@ -125,28 +117,28 @@ static void uart_init()
     ADC_InitStructure.sequence_mode=TRUE;
     ADC_InitStructure.repeat_mode =TRUE;
     ADC_InitStructure.data_align=   ADC_RIGHT_ALIGNMENT;
-	ADC_InitStructure.ordinary_channel_length=5;    //这是转换长度？之前的参数是选择通道?
-	adc_base_config(adc, &ADC_InitStructure);
+    ADC_InitStructure.ordinary_channel_length=5;    //这是转换长度？之前的参数是选择通道?
+    adc_base_config(adc, &ADC_InitStructure);
     adc_ordinary_channel_set(adc,ADC_CHANNEL_1, 1,  ADC_SAMPLETIME_55_5);
-	adc_ordinary_channel_set(adc,ADC_CHANNEL_4, 2,  ADC_SAMPLETIME_55_5);
-	adc_ordinary_channel_set(adc,ADC_CHANNEL_5, 3,  ADC_SAMPLETIME_55_5);
-	adc_ordinary_channel_set(adc,ADC_CHANNEL_6, 4,  ADC_SAMPLETIME_55_5);
-	adc_ordinary_channel_set(adc,ADC_CHANNEL_7, 5,  ADC_SAMPLETIME_55_5);
-	adc_ordinary_conversion_trigger_set(ADC1, ADC12_ORDINARY_TRIG_SOFTWARE, TRUE);
+    adc_ordinary_channel_set(adc,ADC_CHANNEL_4, 2,  ADC_SAMPLETIME_55_5);
+    adc_ordinary_channel_set(adc,ADC_CHANNEL_5, 3,  ADC_SAMPLETIME_55_5);
+    adc_ordinary_channel_set(adc,ADC_CHANNEL_6, 4,  ADC_SAMPLETIME_55_5);
+    adc_ordinary_channel_set(adc,ADC_CHANNEL_7, 5,  ADC_SAMPLETIME_55_5);
+    adc_ordinary_conversion_trigger_set(ADC1, ADC12_ORDINARY_TRIG_SOFTWARE, TRUE);
     adc_dma_mode_enable(adc, TRUE);
     adc_enable(adc, TRUE);
 	adc_calibration_init(adc);
 	while(adc_calibration_init_status_get(adc));
 	adc_calibration_start(adc);
 	while(adc_calibration_status_get(adc));
-   adc_ordinary_software_trigger_enable(ADC1, TRUE);
- 
+    adc_ordinary_software_trigger_enable(ADC1, TRUE);
+
 }
 
 static void board_gpio_init() 
 {
     gpio_init_type gpio_init_struct;
-
+     
     crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK, TRUE);
     crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK, TRUE);
     crm_periph_clock_enable(CRM_GPIOF_PERIPH_CLOCK, TRUE);
@@ -240,7 +232,7 @@ void Board_Init()
     uart_init();
     ADC1_CH_DMA_Config();
     sw_uart_init(TMR16, CRM_TMR16_PERIPH_CLOCK);
-    
+    crm_periph_clock_enable(CRM_I2C2_PERIPH_CLOCK,  TRUE);//???是没开启时钟的问题？
 }
 
 

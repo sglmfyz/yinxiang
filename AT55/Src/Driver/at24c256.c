@@ -32,7 +32,6 @@ static int _write_bytes(AT24c256_T *this, uint16_t addr, uint8_t *data, uint16_t
     int l, left, status;
     uint32_t now;
     int end;
-
     info = container_of(this, at24_info_t, public);
     left = len;
     
@@ -43,7 +42,7 @@ static int _write_bytes(AT24c256_T *this, uint16_t addr, uint8_t *data, uint16_t
         } else {
             l = left;
         }
-        //syslog_debug("Write addr %d, end:%d, l %d\n", addr, end, l);
+        syslog_debug("Write addr 0x%x, end:0x%x, l %d\n", addr, end, l);
 
         now = Micros();
         if (now - info->last_write <= WRITE_CYCLE) {
@@ -64,8 +63,9 @@ static int _write_bytes(AT24c256_T *this, uint16_t addr, uint8_t *data, uint16_t
 }
 
 static int _write_word(AT24c256_T *this, uint16_t addr, uint16_t data)
-{
-    return _write_bytes(this, addr, (uint8_t *)&data, 2);
+{    
+     return _write_bytes(this, addr, (uint8_t *)&data, 2);
+    
 }
 
 static int _read_bytes(AT24c256_T *this, uint16_t addr, uint8_t *data, uint16_t len)

@@ -10,7 +10,7 @@
 
 static process_event_t lock_event;
 
-#define PAGE_SIZE (2 * 1024)
+#define PAGE_SIZE (1 * 1024)
 static uint8_t *flash_page_buf;
 static uint32_t ongoing_page;
 
@@ -76,7 +76,7 @@ static int _flash_page_read(int page)
     return 0;
 }
 
-int flash_page_modify_value(uint32_t address, uint8_t *byte, uint16_t len)
+int flash_page_modify_value(uint32_t address, uint8_t *byte, uint16_t len)  //自己得值
 {
     int status;
     int page = (address - FLASH_BASE_ADDR)/PAGE_SIZE;
@@ -111,9 +111,6 @@ int flash_page_finish()
     flash_unlock();
     Delay_ms(80);
     flash_sector_erase(addr);
-    //FLASH_ErasePage(addr);没有这玩意类型也没有，不知道能不能用sectorerase替换
-    
-
     p = (uint32_t *)flash_page_buf;
     for (int i=0; i<PAGE_SIZE; i+=4) {
         status = flash_word_program(addr + i, *p++);
@@ -122,7 +119,6 @@ int flash_page_finish()
             break;
         }
     }
-    
     flash_lock();
 
     if (status == FLASH_OPERATE_DONE) {
@@ -131,6 +127,7 @@ int flash_page_finish()
         return OPERATOR_ERR;
     }
 }
+
 
 
 

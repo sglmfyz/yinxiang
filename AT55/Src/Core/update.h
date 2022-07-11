@@ -3,10 +3,11 @@
 
 #include "common.h"
 
-//Flash size 256K
-#define FLASH_SIZE 0x40000
+//Flash size 256K改到64k?32k
+#define FLASH_SIZE 0x10000
 #define FLASH_BASE_ADDR 0x08000000
 #define FLASH_END_ADDR  (FLASH_BASE_ADDR + FLASH_SIZE - 1)
+#if 1
 //Reserve end 64 kbytes for bootloader use
 #define FLASH_FOR_BOOTLOADER_SIZE 0x8000 //Reserve 32k for bootloader
 #define FLASH_RESERVED_SIZE 0x8000 //Reserve 32k for bootloader
@@ -24,7 +25,7 @@
 #define USRAM_VAR_ADDR (SRAM_END_ADDR - USRAM_VAR_SIZE)
 #define USRAM_BIN_START (SRAM_BASE_ADDR + RAM_SIZE_FOR_BOOT)
 #define USRAM_BIN_MAX_SIZE (RAM_TOTAL_SIZE- RAM_SIZE_FOR_BOOT - USRAM_VAR_SIZE)
-
+#endif
 #define BOARD_INFO_SIZE (sizeof(board_info_t))
 #define BOARD_INFO_ADDR (FLASH_BASE_ADDR + FLASH_FOR_BOOTLOADER_SIZE - BOARD_INFO_SIZE)
 
@@ -76,8 +77,9 @@ typedef struct {
 #define HW_VER_4G   3
 
 
- update_flash_info_t flash_info_g;
- board_info_t board_info_g;
+
+extern update_flash_info_t flash_info_g;
+extern board_info_t board_info_g;
 
 #define uflash_info (&flash_info_g)
 #define board_info (&board_info_g)

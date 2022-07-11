@@ -16,11 +16,13 @@
 #include "miscdrv.h"
 #include "sensors.h"
 #include "eeprom.h"
-#define INPUT_REG_NUM 64
+#define INPUT_REG_NUM 128
 #define HOLD_REG_NUM 256
 
 #define MODBUS_STRING_FUNC 66 //自定义modbus功能码，用于传输字符串命令，地址、功能码（66）、长度（两字节）、字符串, crc（两字节）
 #define MAX_PKT_LEN 1480
+update_flash_info_t flash_info_g;
+board_info_t board_info_g;
 
 static struct {
     uint16_t input_reg[INPUT_REG_NUM];
@@ -30,6 +32,7 @@ static uint16_t *input, *hold;//选一个就够了
 
 
 
+int INPUTreg=0x200020D6;
 extern void open_lock(uint16_t time_out);
 extern void close_lock(void);
 
@@ -46,7 +49,6 @@ int update_input_reg(uint16_t reg, uint16_t value)
     } else {
         return -PARAM_ERR;
     }
-    printf("input reg[%d] value= %d     \n",reg, modbus_info->input_reg[reg]);
     return 0;
 }
 
@@ -146,50 +148,8 @@ void reg_default_store(uint16_t addr)
 	EE_WriteBytes(EE_MODBUS_4X_BASE + addr * 2, (uint8_t *)&modbus_info->hold_reg[addr], 2);
 }
 
-static void change_monitor(void)
-{
-    uint16_t monitor = get_input_reg(UREG3X_MONITOR);
-    monitor = !monitor;
-    update_input_reg(UREG3X_MONITOR, monitor);
-}
 
 
-static void _lock_cmd(uint16_t addr)
-{
-    uint16_t v = modbus_info->hold_reg[addr];
-    int offset;
-    //uint16_t emlock_enable = modbus_info->hold_reg[UREG4X_EMLOCK_EN];
-    //syslog_info("Ctrl the door");
-    //开门时先打开相应的灯，用于指示需要打开哪个门，开门后即关闭相应的灯
-    if (addr >= UREG4X_LOCK1_CMD && addr <= UREG4X_LOCK4_CMD) {
-        offset = addr - UREG4X_LOCK1_CMD;
-        if (v) {
-            lamp_ctrl(1, offset);
-            misc485->Open_Lock(misc485, offset);
-        } else {
-            lamp_ctrl(0, offset);
-            misc485->Close_Lock(misc485, offset);
-        }
-    }
-}
-
-static void _lock_delay_set(uint16_t addr)
-{
-    uint16_t v = modbus_info->hold_reg[addr];
-
-    misc485->Set_Delay(misc485, v);
-}
-
-
-
-static void _sys_cmd(uint16_t addr)
-{
-    uint16_t *hold_reg = modbus_info->hold_reg;
-    if (hold_reg[addr] == 1) {
-        EXTI_Reset(); 
-        NVIC_SystemReset();
-    } 
-}
 
 
 
@@ -198,7 +158,7 @@ static void change_box_info(uint16_t addr)
 {
     change_monitor();
 }
-#define FLASH_MODBUS_4X_BASE  (FLASH_BASE_ADDR + FLASH_SIZE - 16 - 1024)
+
 
 static void get_hold_reg_by_flash(uint16_t *hold_reg)
 {
@@ -210,7 +170,6 @@ static void get_hold_reg_by_flash(uint16_t *hold_reg)
         update_hold_reg(i / 2 + 1, temp >> 16);
     }
 }
-#if 1
 static void set_eeprom_init_flag(void)
 {
   
@@ -224,7 +183,6 @@ static void set_eeprom_init_flag(void)
     status = flash_page_finish();
     i_assert(status == 0);        
 }
-#endif
 static void _reboot_local_update(uint16_t addr)
 {
     syslog_debug("Reboot local update\n");
@@ -237,32 +195,36 @@ void modbus_param_init(void)
 { 
     uint16_t is_ee_init;
     zmalloc(modbus_info, sizeof(*modbus_info));
-    
     EE_ReadVariable(EE_MODBUS_4X_BASE, &is_ee_init);//判断是否第一次上电
     syslog_info("The board_info cmd value is 0x%x\n", board_info->cmd);
-    printf("base= %d,value =%d  \n",EE_MODBUS_4X_BASE,*(__IO uint32_t*)EE_MODBUS_4X_BASE);
-   // printf("%d",(__IO uint32_t*)FLASH_MODBUS_4X_BASE);
-    if(bit_is_set(board_info->cmd, BOARD_CMD_EEPROM_BIT)){
-        syslog_info("First start up after manufactured!\n");
-        is_ee_init = 0;
-        EE_WriteVariable(EE_MODBUS_4X_BASE, is_ee_init);
+//    if(bit_is_set(board_info->cmd, BOARD_CMD_EEPROM_BIT))
+    if(1) {
+      syslog_info("First start up after manufactured!\n");
+      is_ee_init = 0;
+      EE_WriteVariable(EE_MODBUS_4X_BASE, is_ee_init);
+       flash_unlock();
+       flash_byte_program(FLASH_MODBUS_4X_BASE+2*240+1, 256);
+       flash_byte_program(FLASH_MODBUS_4X_BASE+2*240+0, 256);
+       flash_byte_program(BOARD_INFO_ADDR+sizeof(board_info->product_id)+sizeof(board_info->hw_version), 0);
+       flash_lock();
     }
 
 	if(is_ee_init != EEPROM_INIT_VAR){
         wdt_counter_reload();
-     //   get_hold_reg_by_flash(modbus_info->hold_reg);//首次上电从flash中读取hold_reg的值
+        get_hold_reg_by_flash(modbus_info->hold_reg);//首次上电从flash中读取hold_reg的值
         wdt_counter_reload();
         EE_WriteBytes(EE_MODBUS_4X_BASE + 2, (uint8_t *)(&modbus_info->hold_reg[1]), HOLD_REG_NUM - 2);
         wdt_counter_reload();
         EE_WriteBytes(EE_MODBUS_4X_BASE + HOLD_REG_NUM, (uint8_t *)(&modbus_info->hold_reg[HOLD_REG_NUM / 2]), HOLD_REG_NUM);
         wdt_counter_reload();
         EE_WriteVariable(EE_MODBUS_4X_BASE, EEPROM_INIT_VAR);//最后写入标志，下次上电则不会再进行初始化
-        //t_eeprom_init_flag();
+        //set_eeprom_init_flag();//清除的是整个eeprom数据还是initflag要擦除一页
         syslog_info("modbus hold reg init is ok!\n");
+        
 	}else{
 		EE_ReadBytes(EE_MODBUS_4X_BASE, (uint8_t *)modbus_info->hold_reg, HOLD_REG_NUM * 2);
 	}
-    
+#if 1    
     syslog_info("BOX1_NO is %d, BOX2_NO is %d\n", get_hold_reg(UREG4X_BOX1_NO), get_hold_reg(UREG4X_BOX2_NO));
     
     uint16_t ver = uflash_info->major_v * 100;
@@ -273,7 +235,7 @@ void modbus_param_init(void)
     update_input_reg(UREG3X_FW_VERSION, ver);
     
     syslog_info("Board ID is %06X, version is %d\n", board_id, ver);
-    
+#endif
 }
 
 void modbus_init()
@@ -284,7 +246,6 @@ void modbus_init()
     
     status = Sensors_Init();
     i_assert(status == 0);
-    printf("did it");
     status = Sensors_Add_Temp(0, i2c1);
     status |=Sensors_Add_Temp(1, i2c2);
     status |=Sensors_Add_Temp(2, i2c3);
@@ -294,63 +255,10 @@ void modbus_init()
     i_assert(status == 0); 
 
     modbus = Create_Modbus_Slave();
-    //modbus->Add_Uart(modbus, uart2, MODBUS_RTU, 1);
-    modbus->Add_Uart(modbus, uart1, MODBUS_RTU, 1);//?这样行不行换接口
-    zmalloc(input, 128 * sizeof(uint16_t));
-    zmalloc(hold, 128 * sizeof(uint16_t));
-
-    for (i=0; i<128; i++) {
-        input[i] = i + 10;
-        hold[i] = i * 2 + 1;
-    }
-    
-   // modbus->Set_Reg(modbus, MODBUS_INPUT_REG, input, 128);
-   // modbus->Set_Reg(modbus, MODBUS_HOLDING_REG, hold, 128);
- 
+    modbus->Add_Uart(modbus, uart1, MODBUS_RTU, 1);//换接口
     modbus->Set_Reg(modbus, MODBUS_INPUT_REG, modbus_info->input_reg, INPUT_REG_NUM);//每个寄存器名称仍需要看头文件
     modbus->Set_Reg(modbus, MODBUS_HOLDING_REG, modbus_info->hold_reg, HOLD_REG_NUM);
-    
-
-#if 0
-#error 1
-    MBSlave_T *modbus;
-    uint8_t uid = low_byte(board_info->dev_id);
-
-    modbus = Create_Modbus_Slave();
-
-    printf("Uid:%d\n", uid);
-    modbus->Add_Uart(modbus, uart1, MODBUS_RTU, uid); //
-    modbus->Add_Uart(modbus, RUart, MODBUS_RTU, uid);
-
-    modbus->Slave_Reg_Default_ProcessCB(modbus, reg_default_store);
-    modbus->Set_Reg(modbus, MODBUS_INPUT_REG, modbus_info->input_reg, INPUT_REG_NUM);
-    modbus->Set_Reg(modbus, MODBUS_HOLDING_REG, modbus_info->hold_reg, HOLD_REG_NUM);
-
-
-    
-    uint16_t ver = uflash_info->major_v * 100;
-    ver += uflash_info->minor_v;
-    update_input_reg(UREG3X_FIRMWARE_VER, ver);
-    
-    modbus->Set_AddrMap(modbus, reg_map);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_LOCK1_CMD, _lock_cmd);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_LOCK2_CMD, _lock_cmd);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_LOCK3_CMD, _lock_cmd);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_LOCK4_CMD, _lock_cmd);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_TEMP_HI, change_box_info);    
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_TEMP_LOW, change_box_info);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_LOCK_DELAY, _lock_delay_set);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_HUMIDITY_HI, change_box_info);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_HUMIDITY_LOW, change_box_info);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_VOC_HI, change_box_info);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_ALARM_FORCE, _alarm_force);    
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_SYS_CMD, _sys_cmd);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_BOX1_NO, change_box_info);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_BOX2_NO, change_box_info);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_BOX1_NAME, change_box_info);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_BOX2_NAME, change_box_info);
-    modbus->Slave_Reg_ProcessCB(modbus, UREG4X_LOCAL_UPDATE, _reboot_local_update);
-#endif
+       
 }
 
 

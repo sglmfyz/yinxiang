@@ -6,7 +6,7 @@
 
 #include "at24c256.h"
 
-#define AT24_I2C i2c2
+#define AT24_I2C i2ce
 #define AT24_I2C_ADDR 0xA0
 AT24c256_T *AT24;
 

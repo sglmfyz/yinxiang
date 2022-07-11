@@ -142,6 +142,7 @@
 #define LCD_RX_GPIO_Port GPIOB
 #define I2C1_SDA_Pin GPIO_PINS_9
 #define I2C1_SDA_GPIO_Port GPIOB
+int rewriteflash4x(void);
 
 /* ########################## Assert Selection ############################## */
 /**

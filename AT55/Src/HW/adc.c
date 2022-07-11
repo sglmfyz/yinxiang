@@ -86,9 +86,7 @@ uint16_t ADC_Get(adc_type* hadc, uint8_t cid)
 
     for (i=0; i<info->avg_num; i++) {
         v += info->value[(info->channel_num*i) + cid];  //读平均值，读取avg_num次，channel设置为开启转换通道数减一，从cid位置开始。
-        //printf("value register get=%d ,i=%d		\n", info->value[(info->channel_num*i) + cid],i);
     }
-	printf("adc_get value = %d     \n",v/info->avg_num);
     return v/info->avg_num;
 }
 void ADC_value(adc_type* hadc)
